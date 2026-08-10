@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Berea</title>
+<meta name="description" content="A quiet place to read and study the Bible.">
+<meta name="theme-color" content="#faf8f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-title">
+    <span class="mark">Berea</span>
+    <span id="bar-ref"></span>
+  </div>
+  <button class="icon-btn" id="btn-index" title="Chapters" aria-label="Chapters">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <path d="M4 6h16M4 12h16M4 18h10"/>
+    </svg>
+  </button>
+  <button class="icon-btn" id="btn-settings" title="Settings" aria-label="Settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/>
+    </svg>
+  </button>
+</header>
+
+<main id="reader" aria-live="polite"></main>
+
+<div class="scrim" id="scrim"></div>
+
+<!-- study drawer -->
+<aside class="drawer" id="drawer" aria-label="Study panel">
+  <div class="drawer-head">
+    <div class="drawer-ref" id="drawer-ref"></div>
+    <button class="icon-btn" id="btn-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M6 6l12 12M18 6L6 18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="words" aria-selected="true">Word by word</button>
+    <button role="tab" data-tab="xrefs" aria-selected="false">Cross-references</button>
+    <button role="tab" data-tab="notes" aria-selected="false">Notes</button>
+    <button role="tab" data-tab="deeper" aria-selected="false">Go deeper</button>
+  </div>
+  <div class="panel" id="panel"></div>
+</aside>
+
+<!-- chapter index -->
+<div class="modal" id="modal-index">
+  <div class="sheet">
+    <h2>John</h2>
+    <p class="progress-line" id="progress-line"></p>
+    <div class="plan-grid" id="plan-grid"></div>
+    <div class="sheet-actions">
+      <button class="btn-quiet" data-close-modal>Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- settings -->
+<div class="modal" id="modal-settings">
+  <div class="sheet">
+    <h2>Settings</h2>
+
+    <div class="field">
+      <label>Appearance</label>
+      <div class="seg" id="seg-theme">
+        <button data-theme-choice="system" aria-pressed="true">System</button>
+        <button data-theme-choice="light" aria-pressed="false">Light</button>
+        <button data-theme-choice="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="in-key">Anthropic API key <span style="font-weight:400;color:var(--ink-faint)">— optional</span></label>
+      <input type="password" id="in-key" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
+      <p class="hint">
+        Only needed for the <strong>Go deeper</strong> panel. Stored in this browser's
+        local storage and sent directly to Anthropic from your device — it never
+        touches a server of mine, because there isn't one. Get a key at
+        <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>.
+      </p>
+    </div>
+
+    <div class="field">
+      <label for="in-model">Model</label>
+      <select id="in-model">
+        <option value="claude-opus-5">Claude Opus 5 — deepest study</option>
+        <option value="claude-sonnet-5">Claude Sonnet 5 — balanced</option>
+        <option value="claude-haiku-4-5">Claude Haiku 4.5 — quickest, cheapest</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Everything else</label>
+      <p class="credits" id="credits"></p>
+    </div>
+
+    <div class="sheet-actions">
+      <button class="btn-quiet" id="btn-reset-progress">Reset progress</button>
+      <button class="btn" data-close-modal>Done</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js" type="module"></script>
+</body>
+</html>
