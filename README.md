@@ -1,5 +1,7 @@
 # Berea
 
+**→ [schallabear.github.io/berea-Bible-study](https://schallabear.github.io/berea-Bible-study/)**
+
 A quiet place to read and study the Bible.
 
 Named for the people in Acts 17:11 who "examined the Scriptures daily." It is
@@ -28,7 +30,17 @@ missing features; they're the point.
 - **Tracks where you are** without nagging: mark chapters read, see the book at
   a glance. No streak to break.
 
-## Running it
+## Installing it on your phone
+
+Open the link above, then:
+
+- **iPhone / iPad (Safari)** — Share → *Add to Home Screen*
+- **Android (Chrome)** — menu → *Install app* (or the install prompt in the URL bar)
+
+It then opens like an app, without browser chrome, and works with no
+connection for any chapter you've already opened.
+
+## Running it locally
 
 It's a static site with no build step. Any static server will do:
 
