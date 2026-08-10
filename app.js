@@ -90,7 +90,17 @@ function renderMarkdown(src) {
 
 /* --- data loading -------------------------------------------------------- */
 
+/* Normally the data is fetched from /data. The single-file build (scripts/
+ * build_single.py) inlines the same JSON into window.__BEREA__, keyed by the
+ * identical paths, so everything below is unchanged in either mode. */
+const BUNDLE = typeof window !== "undefined" ? window.__BEREA__ : null;
+
 async function getJSON(path) {
+  if (BUNDLE) {
+    const embedded = BUNDLE[path];
+    if (!embedded) throw new Error(`${path} is not in this build`);
+    return embedded;
+  }
   const res = await fetch(path);
   if (!res.ok) throw new Error(`${path}: ${res.status}`);
   return res.json();
@@ -351,6 +361,13 @@ Distinguish clearly between what the text says, what the historical record shows
 Keep it to a few hundred words. Use short Markdown headings and prose paragraphs; avoid long bullet lists. Do not open with a preamble or restate the question — begin with the substance.`;
 
 function renderDeeper() {
+  if (BUNDLE) {
+    return `<p class="empty">Asking open-ended questions needs a call out to Claude,
+      which this hosted copy isn't permitted to make.<br><br>
+      Run Berea from the repository to use this panel with your own API key.
+      Everything else here works exactly the same.</p>`;
+  }
+
   if (!settings.key) {
     return `<p class="empty">Add an Anthropic API key in Settings to ask open-ended
       questions about the passage.<br><br>Everything else in Berea works without it.</p>`;
@@ -374,7 +391,7 @@ function askKey() {
 }
 
 function wireDeeper() {
-  if (!settings.key) return;
+  if (BUNDLE || !settings.key) return;
 
   const run = (question) => askClaude(question);
 
@@ -524,6 +541,10 @@ function renderIndex() {
 /* --- settings ------------------------------------------------------------ */
 
 function applyTheme() {
+  // In the single-file build the surrounding page owns the theme, so leave the
+  // root element's data-theme exactly as the host set it.
+  if (BUNDLE) return;
+
   const root = document.documentElement;
   if (settings.theme === "system") root.removeAttribute("data-theme");
   else root.setAttribute("data-theme", settings.theme);
@@ -534,28 +555,35 @@ function applyTheme() {
 }
 
 function wireSettings() {
-  el("seg-theme").querySelectorAll("[data-theme-choice]").forEach((b) => {
-    b.addEventListener("click", () => {
-      settings.theme = b.dataset.themeChoice;
-      save(STORE.settings, settings);
-      applyTheme();
+  // Theme, API key, and model are all host-owned or unusable in the bundle.
+  if (BUNDLE) {
+    for (const id of ["seg-theme", "in-key", "in-model"]) {
+      el(id)?.closest(".field")?.remove();
+    }
+  } else {
+    el("seg-theme").querySelectorAll("[data-theme-choice]").forEach((b) => {
+      b.addEventListener("click", () => {
+        settings.theme = b.dataset.themeChoice;
+        save(STORE.settings, settings);
+        applyTheme();
+      });
     });
-  });
 
-  const key = el("in-key");
-  key.value = settings.key || "";
-  key.addEventListener("change", () => {
-    settings.key = key.value.trim();
-    save(STORE.settings, settings);
-    if (state.tab === "deeper") renderPanel();
-  });
+    const key = el("in-key");
+    key.value = settings.key || "";
+    key.addEventListener("change", () => {
+      settings.key = key.value.trim();
+      save(STORE.settings, settings);
+      if (state.tab === "deeper") renderPanel();
+    });
 
-  const model = el("in-model");
-  model.value = settings.model;
-  model.addEventListener("change", () => {
-    settings.model = model.value;
-    save(STORE.settings, settings);
-  });
+    const model = el("in-model");
+    model.value = settings.model;
+    model.addEventListener("change", () => {
+      settings.model = model.value;
+      save(STORE.settings, settings);
+    });
+  }
 
   el("btn-reset-progress").addEventListener("click", () => {
     if (!confirm("Clear which chapters are marked read? Your notes are kept.")) return;
@@ -665,7 +693,8 @@ async function main() {
   window.addEventListener("hashchange", route);
   await route();
 
-  if ("serviceWorker" in navigator) {
+  // The bundle is already one self-contained file; nothing to cache.
+  if (!BUNDLE && "serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(() => { /* offline is a bonus, not a requirement */ });
   }
 }
