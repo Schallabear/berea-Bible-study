@@ -2,11 +2,10 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    # The github-pages environment only permits deployments from the
-    # repository's default branch, which is currently this one. If the default
-    # is ever changed to main, change this to match or the job is rejected
-    # before it starts.
-    branches: [claude/bible-study-app-ljt095]
+    # Must stay in step with the repository's default branch — the github-pages
+    # environment only permits deployments from it, and rejects the job before
+    # it starts otherwise.
+    branches: [main]
   workflow_dispatch:
 
 permissions:
