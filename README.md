@@ -30,6 +30,10 @@ missing features; they're the point.
 - **Tracks where you are** without nagging: mark chapters read, see the book at
   a glance. No streak to break.
 
+A single-file copy (reading and study, without the API-backed *Go deeper* panel)
+can be built with `python3 scripts/build_single.py` and hosted anywhere that
+serves one static file.
+
 ## Installing it on your phone
 
 Open the link above, then:
